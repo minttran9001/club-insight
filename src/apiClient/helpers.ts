@@ -1,4 +1,5 @@
 import { APIError } from "@/apiClient/apiError";
+import type { ListRequest } from "@/types/dashboard";
 import type { SortDir } from "@/types/list";
 import type { DateRange } from "@/types/range";
 
@@ -54,10 +55,7 @@ function isWholeNumber(value: unknown): value is number {
   return isNumber(value) && Number.isInteger(value) && value >= 0;
 }
 
-export function listSearchParams(
-  range: DateRange,
-  query: { q: string; sort: string | null; dir: SortDir | null; page: number; pageSize: number },
-): Record<string, string> {
+export function listSearchParams(range: DateRange, query: ListRequest): Record<string, string> {
   const params: Record<string, string> = {
     from: range.from,
     to: range.to,
