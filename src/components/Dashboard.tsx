@@ -12,7 +12,8 @@ export function Dashboard() {
   const { clubs, error: clubsError } = useClubs();
   const { club, from, to, open, q, sort, dir, page, writeQuery } = useClubQuery(clubs);
   const listOpen = open ?? OpenList.sessions;
-  const { settledClub, settledFrom, settledTo, rangeHasSettled } = useSettledRange(club, from, to);
+  const current = club && from && to ? { clubId: club, from, to } : null;
+  const { settled, rangeHasSettled } = useSettledRange(current);
   const selected = clubs?.find((item) => item.id === club) ?? null;
 
   return (
@@ -28,21 +29,17 @@ export function Dashboard() {
         onRange={(range) => writeQuery(range)}
       />
       {clubsError ? <p role="alert">{clubsError}</p> : null}
-      <DashboardSummary club={club} from={from} to={to} settledClub={settledClub} settledFrom={settledFrom} settledTo={settledTo} />
-      {club && from && to ? (
+      <DashboardSummary current={current} settled={settled} />
+      {current ? (
         <InsightList
-          club={club}
-          from={from}
-          to={to}
-          open={listOpen}
-          search={q}
-          sort={sort}
-          direction={dir}
-          page={page}
-          settledClub={settledClub}
-          settledFrom={settledFrom}
-          settledTo={settledTo}
+          current={current}
+          settled={settled}
           rangeHasSettled={rangeHasSettled}
+          open={listOpen}
+          q={q}
+          sort={sort}
+          dir={dir}
+          page={page}
           onOpen={(next) => writeQuery({ open: next })}
           onQueryChange={(value) => writeQuery({ q: value })}
           onSort={(columnId) => writeQuery({ sort: columnId, dir: sort === columnId && dir !== "desc" ? "desc" : "asc" })}

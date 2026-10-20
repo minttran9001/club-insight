@@ -1,7 +1,7 @@
-import { OpenList, type OpenMetric } from "@/types/dashboard";
+import { OpenList } from "@/types/dashboard";
 import type { SortDir } from "@/types/list";
 
-export function openMetric(value: string | null): OpenMetric | null {
+export function openMetric(value: string | null): OpenList | null {
   if (value === OpenList.sessions || value === OpenList.players || value === OpenList.noShows) return value;
   return null;
 }
@@ -16,7 +16,7 @@ export function writeClubQuery(
     club: string;
     from?: string;
     to?: string;
-    open: OpenMetric | null;
+    open: OpenList | null;
     q?: string;
     sort?: string | null;
     dir?: SortDir | null;

@@ -5,46 +5,41 @@ import { errorMessage } from "@/apiClient/apiError";
 import { isAborted } from "@/apiClient/client";
 import { fetchDashboard } from "@/apiClient/dashboard";
 import type { DashboardReport } from "@/types/dashboard";
-import type { QueryError } from "@/types/dashboard";
-import { clearQueryError } from "@/utils/viewState";
+import type { ClubDateRange } from "@/types/range";
+import { sameRange } from "@/utils/viewState";
 
-export function useDashboardSummary(range: {
-  club: string | null;
-  from: string | null;
-  to: string | null;
-  settledClub: string | null;
-  settledFrom: string | null;
-  settledTo: string | null;
-}) {
-  const { club, from, to, settledClub, settledFrom, settledTo } = range;
+export function useDashboardSummary(range: { current: ClubDateRange | null; settled: ClubDateRange | null }) {
+  const { current, settled } = range;
+  const settledClubId = settled?.clubId;
+  const settledFrom = settled?.from;
+  const settledTo = settled?.to;
   const [summary, setSummary] = useState<DashboardReport | null>(null);
-  const [summaryError, setSummaryError] = useState<QueryError | null>(null);
+  const [summaryError, setSummaryError] = useState<(ClubDateRange & { message: string }) | null>(null);
 
   useEffect(() => {
-    if (!settledClub || !settledFrom || !settledTo) return;
+    if (!settledClubId || !settledFrom || !settledTo) return;
     const controller = new AbortController();
-    const requested = { club: settledClub, from: settledFrom, to: settledTo };
-    fetchDashboard({ clubId: settledClub, from: settledFrom, to: settledTo }, controller.signal)
+    const requested = { clubId: settledClubId, from: settledFrom, to: settledTo };
+    fetchDashboard(requested, controller.signal)
       .then((body) => {
         if (controller.signal.aborted) return;
-        if (body.clubId !== requested.club || body.range.from !== requested.from || body.range.to !== requested.to) return;
+        if (!sameRange({ clubId: body.clubId, ...body.range }, requested)) return;
         setSummary(body);
-        setSummaryError((current) => clearQueryError(current, body.clubId, body.range.from, body.range.to));
+        setSummaryError((error) => (error && sameRange(error, requested) ? null : error));
       })
       .catch((caught: unknown) => {
         if (isAborted(caught, controller.signal)) return;
         setSummaryError({ ...requested, message: errorMessage(caught, "Could not load this range.") });
       });
     return () => controller.abort();
-  }, [settledClub, settledFrom, settledTo]);
+  }, [settledClubId, settledFrom, settledTo]);
 
-  const summaryIsForCurrentRange = summary !== null && summary.clubId === club && summary.range.from === from && summary.range.to === to;
-  const summaryErrorMessage =
-    summaryError && summaryError.club === club && summaryError.from === from && summaryError.to === to ? summaryError.message : null;
+  const summaryIsForCurrentRange = current !== null && summary !== null && sameRange({ clubId: summary.clubId, ...summary.range }, current);
+  const summaryErrorMessage = current && summaryError && sameRange(summaryError, current) ? summaryError.message : null;
 
   return {
     summary,
-    summaryLoading: Boolean(club && from && to) && !summaryIsForCurrentRange && !summaryErrorMessage,
+    summaryLoading: current !== null && !summaryIsForCurrentRange && !summaryErrorMessage,
     summaryErrorMessage,
   };
 }

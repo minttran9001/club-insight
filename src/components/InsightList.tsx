@@ -6,69 +6,48 @@ import { ListTypeToggle } from "@/components/ListTypeToggle";
 import { Table, type TableColumn } from "@/components/Table/Table";
 import { useOpenList } from "@/hooks/useOpenList";
 import { useUnrecordedSessions } from "@/hooks/useUnrecordedSessions";
-import type { OpenMetric } from "@/types/dashboard";
+import type { OpenList } from "@/types/dashboard";
 import type { SortDir } from "@/types/list";
+import type { ClubDateRange } from "@/types/range";
 
 export function InsightList({
-  club,
-  from,
-  to,
-  open,
-  search,
-  sort,
-  direction,
-  page,
-  settledClub,
-  settledFrom,
-  settledTo,
+  current,
+  settled,
   rangeHasSettled,
+  open,
+  q,
+  sort,
+  dir,
+  page,
   onOpen,
   onQueryChange,
   onSort,
   onPage,
 }: {
-  club: string;
-  from: string;
-  to: string;
-  open: OpenMetric;
-  search: string;
-  sort: string | null;
-  direction: SortDir | null;
-  page: number;
-  settledClub: string | null;
-  settledFrom: string | null;
-  settledTo: string | null;
+  current: ClubDateRange;
+  settled: ClubDateRange | null;
   rangeHasSettled: boolean;
-  onOpen: (open: OpenMetric) => void;
+  open: OpenList;
+  q: string;
+  sort: string | null;
+  dir: SortDir | null;
+  page: number;
+  onOpen: (open: OpenList) => void;
   onQueryChange: (value: string) => void;
   onSort: (columnId: string) => void;
   onPage: (page: number) => void;
 }) {
-  const { visibleList, listIsRefreshing, listErrorMessage } = useOpenList({
-    club,
-    from,
-    to,
-    open,
-    search,
-    sort,
-    direction,
-    page,
-    settledClub,
-    settledFrom,
-    settledTo,
-    rangeHasSettled,
-  });
-  const { unrecordedSessions, unrecordedSessionsErrorMessage } = useUnrecordedSessions({ open, settledClub, settledFrom, settledTo });
-  const list = visibleList;
-  const view = list ? insightListView(list) : null;
-  const showEmpty = view !== null && list !== null && list.total === 0 && list.q === "";
+  const { visibleList, listIsRefreshing, listErrorMessage } = useOpenList({ current, settled, rangeHasSettled, open, q, sort, dir, page });
+  const { unrecordedSessions, unrecordedSessionsErrorMessage } = useUnrecordedSessions({ open, current, settled });
+  const view = visibleList ? insightListView(visibleList) : null;
+  const showEmpty = view !== null && visibleList !== null && visibleList.total === 0 && visibleList.q === "";
 
   return (
     <div id="insight-list" className="flex flex-col gap-4 border-t border-teal-100 pt-6">
       <ListTypeToggle value={open} onChange={onOpen} />
       {listErrorMessage ? <p role="alert">{listErrorMessage}</p> : null}
       {!listErrorMessage && !view ? <ListSkeleton /> : null}
-      {view && list ? (
+      {view && visibleList ? (
         <section aria-labelledby={view.headingId} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <h2 id={view.headingId} className="text-lg font-semibold">
@@ -94,16 +73,16 @@ export function InsightList({
               labelledBy={view.headingId}
               getRowId={(row) => row.id}
               minWidth={view.minWidth}
-              query={search}
-              noMatches={list.q !== "" && view.rows.length === 0}
+              query={q}
+              noMatches={visibleList.q !== "" && view.rows.length === 0}
               onQueryChange={onQueryChange}
               sort={sort}
-              dir={direction}
+              dir={dir}
               busy={listIsRefreshing}
               onSort={onSort}
-              page={list.page}
-              pageSize={list.pageSize}
-              total={list.total}
+              page={visibleList.page}
+              pageSize={visibleList.pageSize}
+              total={visibleList.total}
               onPage={onPage}
             />
           )}

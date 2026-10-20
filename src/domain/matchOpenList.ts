@@ -1,12 +1,12 @@
-import { OpenList, type ListState, type OpenMetric } from "@/types/dashboard";
+import { OpenList, type ListState } from "@/types/dashboard";
 
-export function matchOpenMetric<R>(open: OpenMetric, handlers: { [K in OpenMetric]: () => R }): R {
+export function matchOpenList<R>(open: OpenList, handlers: { [K in OpenList]: () => R }): R {
   return handlers[open]();
 }
 
 export function matchListState<R>(
   list: ListState,
-  handlers: { [K in OpenMetric]: (value: Extract<ListState, { open: K }>) => R },
+  handlers: { [K in OpenList]: (value: Extract<ListState, { open: K }>) => R },
 ): R {
   switch (list.open) {
     case OpenList.sessions:

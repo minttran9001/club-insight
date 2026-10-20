@@ -10,7 +10,7 @@ export const OpenList = {
   noShows: "noshows",
 } as const;
 
-export type OpenMetric = (typeof OpenList)[keyof typeof OpenList];
+export type OpenList = (typeof OpenList)[keyof typeof OpenList];
 
 export type WeekPoint = {
   weekStart: string;
@@ -37,18 +37,6 @@ export type DashboardReport = {
     heldSessions: number;
   };
   weeks: WeekPoint[];
-};
-
-export type QueryError = {
-  club: string;
-  from: string;
-  to: string;
-  open?: OpenMetric;
-  q?: string;
-  sort?: string | null;
-  dir?: SortDir | null;
-  page?: number;
-  message: string;
 };
 
 export type ListRequest = {
@@ -80,7 +68,7 @@ export type DashboardQuery = {
   club?: string;
   from?: string;
   to?: string;
-  open?: OpenMetric | null;
+  open?: OpenList | null;
   q?: string;
   sort?: string | null;
   dir?: SortDir | null;

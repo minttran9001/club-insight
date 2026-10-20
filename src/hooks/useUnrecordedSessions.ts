@@ -4,72 +4,39 @@ import { useEffect, useState } from "react";
 import { errorMessage } from "@/apiClient/apiError";
 import { isAborted } from "@/apiClient/client";
 import { fetchUnrecordedSessions } from "@/apiClient/unrecorded-sessions";
+import { OpenList } from "@/types/dashboard";
+import type { ClubDateRange } from "@/types/range";
 import type { UnrecordedSessionItem } from "@/types/session";
-import { OpenList, type OpenMetric } from "@/types/dashboard";
+import { sameRange } from "@/utils/viewState";
 
-type LoadedUnrecordedSessions = {
-  clubId: string;
-  from: string;
-  to: string;
-  sessions: UnrecordedSessionItem[];
-};
-
-type UnrecordedSessionsError = {
-  clubId: string;
-  from: string;
-  to: string;
-  message: string;
-};
-
-export function useUnrecordedSessions(range: {
-  open: OpenMetric;
-  settledClub: string | null;
-  settledFrom: string | null;
-  settledTo: string | null;
-}) {
-  const { open, settledClub, settledFrom, settledTo } = range;
-  const [loadedUnrecordedSessions, setLoadedUnrecordedSessions] = useState<LoadedUnrecordedSessions | null>(null);
-  const [unrecordedSessionsError, setUnrecordedSessionsError] = useState<UnrecordedSessionsError | null>(null);
+export function useUnrecordedSessions(range: { open: OpenList; current: ClubDateRange; settled: ClubDateRange | null }) {
+  const { open, current, settled } = range;
+  const settledClubId = settled?.clubId;
+  const settledFrom = settled?.from;
+  const settledTo = settled?.to;
+  const [loaded, setLoaded] = useState<(ClubDateRange & { sessions: UnrecordedSessionItem[] }) | null>(null);
+  const [loadError, setLoadError] = useState<(ClubDateRange & { message: string }) | null>(null);
 
   useEffect(() => {
-    if (open !== OpenList.noShows || !settledClub || !settledFrom || !settledTo) return;
+    if (open !== OpenList.noShows || !settledClubId || !settledFrom || !settledTo) return;
     const controller = new AbortController();
-    const requested = { clubId: settledClub, from: settledFrom, to: settledTo };
-    fetchUnrecordedSessions({ clubId: settledClub, from: settledFrom, to: settledTo }, controller.signal)
+    const requested = { clubId: settledClubId, from: settledFrom, to: settledTo };
+    fetchUnrecordedSessions(requested, controller.signal)
       .then((body) => {
-        if (controller.signal.aborted) return;
-        if (body.clubId !== requested.clubId || body.from !== requested.from || body.to !== requested.to) return;
-        setLoadedUnrecordedSessions({ clubId: body.clubId, from: body.from, to: body.to, sessions: body.sessions });
-        setUnrecordedSessionsError((current) =>
-          current && current.clubId === requested.clubId && current.from === requested.from && current.to === requested.to ? null : current,
-        );
+        if (controller.signal.aborted || !sameRange(body, requested)) return;
+        setLoaded(body);
+        setLoadError((error) => (error && sameRange(error, requested) ? null : error));
       })
       .catch((caught: unknown) => {
         if (isAborted(caught, controller.signal)) return;
-        setUnrecordedSessionsError({
-          ...requested,
-          message: errorMessage(caught, "Could not load sessions where attendance was not taken."),
-        });
+        setLoadError({ ...requested, message: errorMessage(caught, "Could not load sessions where attendance was not taken.") });
       });
     return () => controller.abort();
-  }, [open, settledClub, settledFrom, settledTo]);
+  }, [open, settledClubId, settledFrom, settledTo]);
 
-  const unrecordedSessions =
-    open === OpenList.noShows &&
-    loadedUnrecordedSessions !== null &&
-    loadedUnrecordedSessions.clubId === settledClub &&
-    loadedUnrecordedSessions.from === settledFrom &&
-    loadedUnrecordedSessions.to === settledTo
-      ? loadedUnrecordedSessions.sessions
-      : [];
-  const unrecordedSessionsErrorMessage =
-    open === OpenList.noShows &&
-    unrecordedSessionsError &&
-    unrecordedSessionsError.clubId === settledClub &&
-    unrecordedSessionsError.from === settledFrom &&
-    unrecordedSessionsError.to === settledTo
-      ? unrecordedSessionsError.message
-      : null;
-
-  return { unrecordedSessions, unrecordedSessionsErrorMessage };
+  const showing = open === OpenList.noShows;
+  return {
+    unrecordedSessions: showing && loaded && sameRange(loaded, current) ? loaded.sessions : [],
+    unrecordedSessionsErrorMessage: showing && loadError && sameRange(loadError, current) ? loadError.message : null,
+  };
 }

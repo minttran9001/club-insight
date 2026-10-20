@@ -1,13 +1,13 @@
 import { Button } from "@/components/Button";
-import { OpenList, type OpenMetric } from "@/types/dashboard";
+import { OpenList } from "@/types/dashboard";
 
-const options: { value: OpenMetric; label: string }[] = [
+const options: { value: OpenList; label: string }[] = [
   { value: OpenList.sessions, label: "Sessions held" },
   { value: OpenList.players, label: "Active players" },
   { value: OpenList.noShows, label: "No-shows" },
 ];
 
-export function ListTypeToggle({ value, onChange }: { value: OpenMetric; onChange: (value: OpenMetric) => void }) {
+export function ListTypeToggle({ value, onChange }: { value: OpenList; onChange: (value: OpenList) => void }) {
   return (
     <div className="flex flex-wrap gap-2" role="group" aria-label="Table">
       {options.map((option) => {

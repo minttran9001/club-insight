@@ -2,19 +2,13 @@
 
 import { rangeFetchDebounceMs } from "@/constants/timing";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import type { ClubDateRange } from "@/types/range";
 
-export function useSettledRange(club: string | null, from: string | null, to: string | null) {
-  const rangeKey = `${club ?? ""}|${from ?? ""}|${to ?? ""}`;
+export function useSettledRange(current: ClubDateRange | null) {
+  const rangeKey = current ? `${current.clubId}|${current.from}|${current.to}` : "";
   const debouncedRange = useDebouncedValue(rangeKey, rangeFetchDebounceMs);
-  const [debouncedClub = "", debouncedFrom = "", debouncedTo = ""] = debouncedRange.split("|");
-  const settledClub = debouncedClub || null;
-  const settledFrom = debouncedFrom || null;
-  const settledTo = debouncedTo || null;
+  const [clubId = "", from = "", to = ""] = debouncedRange.split("|");
+  const settled: ClubDateRange | null = clubId && from && to ? { clubId, from, to } : null;
 
-  return {
-    settledClub,
-    settledFrom,
-    settledTo,
-    rangeHasSettled: settledClub === club && settledFrom === from && settledTo === to,
-  };
+  return { settled, rangeHasSettled: debouncedRange === rangeKey };
 }

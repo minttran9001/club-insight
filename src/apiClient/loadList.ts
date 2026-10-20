@@ -1,12 +1,13 @@
 import { fetchActivePlayers } from "@/apiClient/active-players";
+import type { PagedClubFields } from "@/apiClient/helpers";
 import { fetchNoShows } from "@/apiClient/no-shows";
 import { fetchSessions } from "@/apiClient/sessions";
-import { matchOpenMetric } from "@/domain/matchOpenList";
-import { OpenList, type ListRequest, type ListState, type OpenMetric } from "@/types/dashboard";
+import { matchOpenList } from "@/domain/matchOpenList";
+import { OpenList, type ListRequest, type ListState } from "@/types/dashboard";
 import type { ClubDateRange } from "@/types/range";
 
-export function loadList(open: OpenMetric, scope: ClubDateRange, list: ListRequest, signal: AbortSignal): Promise<ListState> {
-  return matchOpenMetric<Promise<ListState>>(open, {
+export function loadList(open: OpenList, scope: ClubDateRange, list: ListRequest, signal: AbortSignal): Promise<ListState> {
+  return matchOpenList<Promise<ListState>>(open, {
     [OpenList.sessions]: async () => {
       const body = await fetchSessions(scope, list, signal);
       return { open: OpenList.sessions, ...listed(body), sessions: body.sessions };
@@ -31,7 +32,7 @@ export function loadList(open: OpenMetric, scope: ClubDateRange, list: ListReque
   });
 }
 
-function listed(body: ClubDateRange & { page: number; pageSize: number; total: number; q: string; sort: string | null; dir: "asc" | "desc" | null }) {
+function listed(body: ClubDateRange & PagedClubFields) {
   return {
     clubId: body.clubId,
     from: body.from,

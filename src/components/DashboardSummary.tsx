@@ -4,23 +4,10 @@ import { ActivePlayerChart } from "@/components/ActivePlayerChart";
 import { MetricCards } from "@/components/MetricCards";
 import { SummarySkeleton } from "@/components/SummarySkeleton";
 import { useDashboardSummary } from "@/hooks/useDashboardSummary";
+import type { ClubDateRange } from "@/types/range";
 
-export function DashboardSummary({
-  club,
-  from,
-  to,
-  settledClub,
-  settledFrom,
-  settledTo,
-}: {
-  club: string | null;
-  from: string | null;
-  to: string | null;
-  settledClub: string | null;
-  settledFrom: string | null;
-  settledTo: string | null;
-}) {
-  const { summary, summaryLoading, summaryErrorMessage } = useDashboardSummary({ club, from, to, settledClub, settledFrom, settledTo });
+export function DashboardSummary({ current, settled }: { current: ClubDateRange | null; settled: ClubDateRange | null }) {
+  const { summary, summaryLoading, summaryErrorMessage } = useDashboardSummary({ current, settled });
 
   if (summaryErrorMessage) return <p role="alert">{summaryErrorMessage}</p>;
   if (summaryLoading || !summary) return summaryLoading ? <SummarySkeleton /> : null;

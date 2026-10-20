@@ -7,64 +7,55 @@ import { loadList } from "@/apiClient/loadList";
 import { rangeFetchDebounceMs } from "@/constants/timing";
 import { DEFAULT_PAGE_SIZE } from "@/domain/pageList";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import type { ListState, OpenMetric, QueryError } from "@/types/dashboard";
+import type { ListState, OpenList } from "@/types/dashboard";
 import type { SortDir } from "@/types/list";
-import { clearQueryError, sameList } from "@/utils/viewState";
+import type { ClubDateRange } from "@/types/range";
+import { sameList, sameListScope, type ListKey } from "@/utils/viewState";
 
 export function useOpenList(query: {
-  club: string;
-  from: string;
-  to: string;
-  open: OpenMetric;
-  search: string;
-  sort: string | null;
-  direction: SortDir | null;
-  page: number;
-  settledClub: string | null;
-  settledFrom: string | null;
-  settledTo: string | null;
+  current: ClubDateRange;
+  settled: ClubDateRange | null;
   rangeHasSettled: boolean;
+  open: OpenList;
+  q: string;
+  sort: string | null;
+  dir: SortDir | null;
+  page: number;
 }) {
-  const { club, from, to, open, search, sort, page, settledClub, settledFrom, settledTo, rangeHasSettled } = query;
-  const dir: SortDir | null = sort ? (query.direction ?? "asc") : null;
-  const settledSearch = useDebouncedValue(search, rangeFetchDebounceMs);
-  const ready = rangeHasSettled && settledSearch === search;
+  const { current, settled, rangeHasSettled, open, q, sort, page } = query;
+  const dir: SortDir | null = sort ? (query.dir ?? "asc") : null;
+  const settledClubId = settled?.clubId;
+  const settledFrom = settled?.from;
+  const settledTo = settled?.to;
+  const settledQ = useDebouncedValue(q, rangeFetchDebounceMs);
+  const ready = rangeHasSettled && settledQ === q;
   const [loadedList, setLoadedList] = useState<ListState | null>(null);
-  const [listError, setListError] = useState<QueryError | null>(null);
+  const [listError, setListError] = useState<(ListKey & { message: string }) | null>(null);
 
   useEffect(() => {
-    if (!ready || !settledClub || !settledFrom || !settledTo) return;
+    if (!ready || !settledClubId || !settledFrom || !settledTo) return;
     const controller = new AbortController();
-    const requested = { club: settledClub, from: settledFrom, to: settledTo, open, q: search, sort, dir, page, pageSize: DEFAULT_PAGE_SIZE };
-    loadList(open, { clubId: settledClub, from: settledFrom, to: settledTo }, requested, controller.signal)
+    const scope = { clubId: settledClubId, from: settledFrom, to: settledTo };
+    const requested: ListKey = { ...scope, open, q, sort, dir, page, pageSize: DEFAULT_PAGE_SIZE };
+    loadList(open, scope, requested, controller.signal)
       .then((next) => {
         if (controller.signal.aborted || !sameList(next, requested)) return;
         setLoadedList(next);
-        setListError((current) => clearQueryError(current, next.clubId, next.from, next.to, next.open));
+        setListError((error) => (error && sameListScope(error, requested) ? null : error));
       })
       .catch((caught: unknown) => {
         if (isAborted(caught, controller.signal)) return;
         setListError({ ...requested, message: errorMessage(caught, "Could not load this list.") });
       });
     return () => controller.abort();
-  }, [ready, settledClub, settledFrom, settledTo, open, search, sort, dir, page]);
+  }, [ready, settledClubId, settledFrom, settledTo, open, q, sort, dir, page]);
 
-  const visibleList =
-    loadedList && loadedList.clubId === club && loadedList.from === from && loadedList.to === to && loadedList.open === open ? loadedList : null;
-  const listIsRefreshing =
-    visibleList !== null && (visibleList.q !== search || visibleList.sort !== sort || visibleList.dir !== dir || visibleList.page !== page);
-  const listErrorMessage =
-    listError &&
-    listError.club === club &&
-    listError.from === from &&
-    listError.to === to &&
-    listError.open === open &&
-    listError.q === search &&
-    listError.sort === sort &&
-    listError.dir === dir &&
-    listError.page === page
-      ? listError.message
-      : null;
+  const shown: ListKey = { ...current, open, q, sort, dir, page, pageSize: DEFAULT_PAGE_SIZE };
+  const visibleList = loadedList && sameListScope(loadedList, shown) ? loadedList : null;
 
-  return { visibleList, listIsRefreshing, listErrorMessage };
+  return {
+    visibleList,
+    listIsRefreshing: visibleList !== null && !sameList(visibleList, shown),
+    listErrorMessage: listError && sameList(listError, shown) ? listError.message : null,
+  };
 }
