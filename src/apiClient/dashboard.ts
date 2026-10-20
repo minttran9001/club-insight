@@ -1,60 +1,89 @@
 import { request } from "@/apiClient/client";
-import { invalidResponse, isRecord } from "@/apiClient/helpers";
-import type { DashboardReport } from "@/types/dashboard";
-import type { ClubDateRange } from "@/types/range";
+import { invalidResponse, isNullableNumber, isNumber, isRecord, readItems } from "@/apiClient/helpers";
+import { readKind } from "@/apiClient/no-shows";
+import type { DashboardReport, WeekPoint } from "@/types/dashboard";
+import type { ClubDateRange, DateRange } from "@/types/range";
+
+const message = "Could not load this range.";
 
 export async function fetchDashboard(scope: ClubDateRange, signal?: AbortSignal): Promise<DashboardReport> {
   const body = await request.get(`/api/clubs/${encodeURIComponent(scope.clubId)}/dashboard`, { from: scope.from, to: scope.to }, { signal });
   return normalizeDashboard(body);
 }
 
-function normalizeDashboard(body: unknown): DashboardReport {
-  if (!isDashboard(body)) throw invalidResponse("Could not load this range.");
-  return body;
+export function normalizeDashboard(body: unknown): DashboardReport {
+  if (!isRecord(body)) throw invalidResponse(message);
+  const { clubId, hasHeldSession, showChart } = body;
+  const summaryMessage = body.message;
+  if (typeof clubId !== "string" || typeof hasHeldSession !== "boolean" || typeof showChart !== "boolean") throw invalidResponse(message);
+  if (typeof summaryMessage !== "string" && summaryMessage !== null) throw invalidResponse(message);
+  return {
+    clubId,
+    range: readRange(body.range),
+    comparison: readComparison(body.comparison),
+    hasHeldSession,
+    message: summaryMessage,
+    showChart,
+    sessionsHeld: readCountDelta(body.sessionsHeld),
+    activePlayers: readCountDelta(body.activePlayers),
+    noShows: readNoShows(body.noShows),
+    weeks: readItems(body, "weeks", readWeek, message),
+  };
 }
 
-function isDashboard(value: unknown): value is DashboardReport {
-  if (!isRecord(value)) return false;
-  const range = isRecord(value.range) ? value.range : null;
-  const comparison = isRecord(value.comparison) ? value.comparison : null;
-  const sessionsHeld = isRecord(value.sessionsHeld) ? value.sessionsHeld : null;
-  const activePlayers = isRecord(value.activePlayers) ? value.activePlayers : null;
-  const noShows = isRecord(value.noShows) ? value.noShows : null;
-  return (
-    typeof value.clubId === "string" &&
-    range !== null &&
-    typeof range.from === "string" &&
-    typeof range.to === "string" &&
-    comparison !== null &&
-    typeof comparison.label === "string" &&
-    typeof value.showChart === "boolean" &&
-    (typeof value.message === "string" || value.message === null) &&
-    sessionsHeld !== null &&
-    typeof sessionsHeld.value === "number" &&
-    typeof sessionsHeld.delta === "number" &&
-    activePlayers !== null &&
-    typeof activePlayers.value === "number" &&
-    typeof activePlayers.delta === "number" &&
-    noShows !== null &&
-    typeof noShows.attendanceTaken === "number" &&
-    typeof noShows.heldSessions === "number" &&
-    (noShows.kind === "count" || noShows.kind === "unknown" || noShows.kind === "no-sessions") &&
-    (typeof noShows.value === "number" || noShows.value === null) &&
-    (typeof noShows.delta === "number" || noShows.delta === null) &&
-    typeof value.hasHeldSession === "boolean" &&
-    Array.isArray(value.weeks) &&
-    value.weeks.every(isWeek)
-  );
+function readRange(value: unknown): DateRange {
+  if (!isRecord(value) || typeof value.from !== "string" || typeof value.to !== "string") throw invalidResponse(message);
+  return { from: value.from, to: value.to };
 }
 
-function isWeek(value: unknown): boolean {
-  if (!isRecord(value)) return false;
-  return (
-    typeof value.weekStart === "string" &&
-    typeof value.label === "string" &&
-    typeof value.count === "number" &&
-    Number.isFinite(value.count) &&
-    typeof value.partial === "boolean" &&
-    typeof value.text === "string"
-  );
+function readComparison(value: unknown): DashboardReport["comparison"] {
+  const range = readRange(value);
+  if (!isRecord(value) || typeof value.label !== "string") throw invalidResponse(message);
+  return { ...range, label: value.label };
+}
+
+function readCountDelta(value: unknown): { value: number; delta: number } {
+  if (!isRecord(value) || !isNumber(value.value) || !isNumber(value.delta)) throw invalidResponse(message);
+  return { value: value.value, delta: value.delta };
+}
+
+function readNoShows(value: unknown): DashboardReport["noShows"] {
+  if (!isRecord(value)) throw invalidResponse(message);
+  const kind = readKind(value.kind);
+  if (
+    !kind ||
+    !isNullableNumber(value.value) ||
+    !isNullableNumber(value.delta) ||
+    !isNumber(value.attendanceTaken) ||
+    !isNumber(value.heldSessions)
+  ) {
+    throw invalidResponse(message);
+  }
+  return {
+    kind,
+    value: value.value,
+    delta: value.delta,
+    attendanceTaken: value.attendanceTaken,
+    heldSessions: value.heldSessions,
+  };
+}
+
+function readWeek(value: unknown): WeekPoint | null {
+  if (!isRecord(value)) return null;
+  if (
+    typeof value.weekStart !== "string" ||
+    typeof value.label !== "string" ||
+    !isNumber(value.count) ||
+    typeof value.partial !== "boolean" ||
+    typeof value.text !== "string"
+  ) {
+    return null;
+  }
+  return {
+    weekStart: value.weekStart,
+    label: value.label,
+    count: value.count,
+    partial: value.partial,
+    text: value.text,
+  };
 }

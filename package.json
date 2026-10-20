@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "yarn seed && next dev",
     "seed": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/register-alias.mjs scripts/seed.ts",
-    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/register-alias.mjs --test src/app/api/server/pageList.test.ts src/app/api/server/metrics.test.ts src/utils/noShowListEmptyCopy.test.ts src/utils/dateRangeField.test.ts src/utils/formatDelta.test.ts src/app/api/server/foldSearchText.test.ts src/components/Table/virtualRange.test.ts src/app/api/server/db/sortKey.test.ts src/app/api/server/db/queries.test.ts src/app/api/server/db/metricRules.test.ts",
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/register-alias.mjs --test src/app/api/server/pageList.test.ts src/app/api/server/metrics.test.ts src/utils/noShowListEmptyCopy.test.ts src/utils/dateRangeField.test.ts src/utils/formatDelta.test.ts src/app/api/server/foldSearchText.test.ts src/components/Table/virtualRange.test.ts src/app/api/server/db/sortKey.test.ts src/app/api/server/db/queries.test.ts src/app/api/server/db/metricRules.test.ts src/apiClient/dashboard.test.ts",
     "typecheck": "tsc --noEmit",
     "build": "next build",
     "start": "next start",

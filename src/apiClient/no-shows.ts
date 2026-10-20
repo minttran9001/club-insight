@@ -19,7 +19,7 @@ export function fetchNoShows(scope: ClubDateRange, list: ListRequest, signal?: A
   });
 }
 
-function readKind(value: unknown): NoShowKind | null {
+export function readKind(value: unknown): NoShowKind | null {
   if (value === "count" || value === "unknown" || value === "no-sessions") return value;
   return null;
 }
