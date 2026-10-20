@@ -1,4 +1,4 @@
-import { attendanceCoverage } from "@/components/metricCopy";
+import { attendanceCoverage, noSessionsInRange } from "@/components/metricCopy";
 import { noShowListColumns, playerListColumns, sessionListColumns } from "@/domain/listColumns";
 import { matchListState } from "@/domain/matchOpenList";
 import { OpenList, type ListState } from "@/types/dashboard";
@@ -83,7 +83,7 @@ export function insightListView(list: ListState): InsightListView {
       heading: "Sessions held",
       count: String(sessions.total),
       coverage: null,
-      emptyMessage: "No sessions in this range.",
+      emptyMessage: noSessionsInRange,
       caption: "Held sessions, most recent first",
       minWidth: "880px",
       columns: displayColumns(sessionListColumns, sessionLabels, sessionClassNames),

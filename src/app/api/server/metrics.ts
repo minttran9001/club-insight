@@ -7,8 +7,6 @@ import type { WeekPoint } from "@/types/dashboard";
 import type { DateRange } from "@/types/range";
 import type { MetricSession } from "@/types/session";
 
-export const NO_SESSIONS_IN_RANGE = "No sessions in this range.";
-
 const WEEKDAYS_FROM_SUNDAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export function localDateKey(instant: Date, timeZone: string): string {

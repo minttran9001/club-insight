@@ -1,7 +1,8 @@
+import { noSessionsInRange } from "@/components/metricCopy";
 import type { NoShowKind } from "@/types/noShow";
 
 export function noShowListEmptyCopy(kind: NoShowKind): string {
-  if (kind === "no-sessions") return "No sessions in this range.";
+  if (kind === "no-sessions") return noSessionsInRange;
   if (kind === "unknown") return "Attendance was not taken.";
   return "No counted no-shows.";
 }

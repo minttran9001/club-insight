@@ -1,11 +1,5 @@
-import {
-  NO_SESSIONS_IN_RANGE,
-  buildWeekPoints,
-  clubHasNotHeldSession,
-  comparisonLabel,
-  previousRange,
-  weekSpan,
-} from "@/app/api/server/metrics";
+import { buildWeekPoints, clubHasNotHeldSession, comparisonLabel, previousRange, weekSpan } from "@/app/api/server/metrics";
+import { noSessionsInRange } from "@/components/metricCopy";
 import type { ClubRecord } from "@/types/club";
 import type { DashboardReport } from "@/types/dashboard";
 import type { DateRange } from "@/types/range";
@@ -30,7 +24,7 @@ export function queryDashboard(club: ClubRecord, range: DateRange): DashboardRep
   const weeks = weekCounts(club, range);
   let message: string | null = null;
   if (!hasHeldSession) message = clubHasNotHeldSession(club.name, club.createdAt);
-  else if (currentHeld === 0) message = NO_SESSIONS_IN_RANGE;
+  else if (currentHeld === 0) message = noSessionsInRange;
 
   return {
     clubId: club.id,
