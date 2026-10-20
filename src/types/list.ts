@@ -18,6 +18,8 @@ export type ParsedListQuery = {
 
 export type PageColumn<T> = {
   id: string;
+  label: string;
+  className?: string;
   text: (row: T) => string;
 };
 

@@ -8,28 +8,28 @@ function countOrUnknown(value: number | null): string {
 }
 
 export const sessionListColumns: readonly PageColumn<SessionListItem>[] = [
-  { id: "title", text: (session) => session.title },
-  { id: "start", text: (session) => session.localStart },
-  { id: "duration", text: (session) => `${session.durationMinutes} min` },
-  { id: "places", text: (session) => String(session.places) },
-  { id: "kept", text: (session) => String(session.keptBookings) },
-  { id: "cancelled", text: (session) => String(session.cancelledBookings) },
-  { id: "attended", text: (session) => countOrUnknown(session.attended) },
-  { id: "noshows", text: (session) => countOrUnknown(session.noShows) },
-  { id: "attendance", text: (session) => (session.attendanceRecorded ? "Recorded" : "Not recorded") },
+  { id: "title", label: "Title", text: (session) => session.title },
+  { id: "start", label: "Start", className: "whitespace-nowrap", text: (session) => session.localStart },
+  { id: "duration", label: "Duration", className: "tabular-nums", text: (session) => `${session.durationMinutes} min` },
+  { id: "places", label: "Places", className: "tabular-nums", text: (session) => String(session.places) },
+  { id: "kept", label: "Kept bookings", className: "tabular-nums", text: (session) => String(session.keptBookings) },
+  { id: "cancelled", label: "Cancelled bookings", className: "tabular-nums", text: (session) => String(session.cancelledBookings) },
+  { id: "attended", label: "Attended", text: (session) => countOrUnknown(session.attended) },
+  { id: "noshows", label: "No-shows", text: (session) => countOrUnknown(session.noShows) },
+  { id: "attendance", label: "Attendance", text: (session) => (session.attendanceRecorded ? "Recorded" : "Not recorded") },
 ];
 
 export const playerListColumns: readonly PageColumn<ActivePlayerItem>[] = [
-  { id: "name", text: (player) => player.name },
-  { id: "joined", text: (player) => player.joinedOn },
-  { id: "attended", text: (player) => String(player.sessionsAttended) },
-  { id: "unrecorded", text: (player) => String(player.unrecordedSessions) },
-  { id: "noshows", text: (player) => String(player.confirmedNoShows) },
+  { id: "name", label: "Name", text: (player) => player.name },
+  { id: "joined", label: "Joined", className: "whitespace-nowrap", text: (player) => player.joinedOn },
+  { id: "attended", label: "Sessions attended", className: "tabular-nums", text: (player) => String(player.sessionsAttended) },
+  { id: "unrecorded", label: "Unrecorded sessions", className: "tabular-nums", text: (player) => String(player.unrecordedSessions) },
+  { id: "noshows", label: "Confirmed no-shows", className: "tabular-nums", text: (player) => String(player.confirmedNoShows) },
 ];
 
 export const noShowListColumns: readonly PageColumn<NoShowItem>[] = [
-  { id: "player", text: (row) => row.playerName },
-  { id: "joined", text: (row) => row.joinedOn },
-  { id: "session", text: (row) => row.sessionTitle },
-  { id: "start", text: (row) => row.localStart },
+  { id: "player", label: "Player", text: (row) => row.playerName },
+  { id: "joined", label: "Joined", className: "whitespace-nowrap", text: (row) => row.joinedOn },
+  { id: "session", label: "Session", text: (row) => row.sessionTitle },
+  { id: "start", label: "Start", className: "whitespace-nowrap", text: (row) => row.localStart },
 ];
