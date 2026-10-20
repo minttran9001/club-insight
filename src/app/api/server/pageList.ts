@@ -2,7 +2,7 @@ import { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE } from "@/domain/pageList";
 import type { ListQueryFields, PageListFailure, ParsedListQuery, SortDir } from "@/types/list";
 
 const pageError = "page must be an integer greater than or equal to 1.";
-const pageSizeError = "pageSize must be an integer from 1 through 50.";
+const pageSizeError = `pageSize must be an integer from 1 through ${MAX_PAGE_SIZE}.`;
 
 export function parseListQuery(input: ListQueryFields, allowedSorts: readonly string[]): { ok: true; query: ParsedListQuery } | PageListFailure {
   const page = readOptionalInt(input.page, 1, (value) => value >= 1, pageError);

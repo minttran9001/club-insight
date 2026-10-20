@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { DEFAULT_CLUB_ID } from "@/constants/defaultClub";
 import type { ClubSummary } from "@/types/club";
 import { OpenList, type DashboardQuery } from "@/types/dashboard";
 import { openMetric, sortDir, writeClubQuery } from "@/utils/clubQuery";
@@ -22,7 +23,7 @@ export function useClubQuery(clubs: ClubSummary[] | null) {
   useEffect(() => {
     if (!clubs || clubs.length === 0) return;
     if (club && from && to) return;
-    const selected = clubs.find((item) => item.id === club) ?? clubs.find((item) => item.id === "club-001") ?? clubs[0];
+    const selected = clubs.find((item) => item.id === club) ?? clubs.find((item) => item.id === DEFAULT_CLUB_ID) ?? clubs[0];
     writeClubQuery((href, options) => router.replace(href, options), {
       club: selected.id,
       from: from ?? selected.presets.fourWeeks.from,
@@ -66,7 +67,7 @@ export function useClubQuery(clubs: ClubSummary[] | null) {
     }
 
     writeClubQuery((href, options) => router.replace(href, options), {
-      club: next.club ?? club ?? "club-001",
+      club: next.club ?? club ?? DEFAULT_CLUB_ID,
       from: next.from ?? from ?? undefined,
       to: next.to ?? to ?? undefined,
       open: next.open === undefined ? open : next.open,
