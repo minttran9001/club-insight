@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import { DayPicker, getDefaultClassNames, type DateRange as CalendarRange } from "react-day-picker";
 import "react-day-picker/style.css";
 import { controlClass } from "@/constants/controlClass";
-import { formatDay } from "@/domain/metrics";
+import { formatDay } from "@/domain/formatDay";
 import type { DateRange } from "@/types/range";
 import { dateKey, orderedRange, parseDateKey, rangeLabel } from "@/utils/dateRangeField";
 

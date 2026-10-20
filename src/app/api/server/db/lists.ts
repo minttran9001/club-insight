@@ -1,4 +1,4 @@
-import { formatDay } from "@/domain/metrics";
+import { formatDay } from "@/domain/formatDay";
 import { formatLocalStart } from "@/app/api/server/metrics";
 import type { ClubRecord } from "@/types/club";
 import type { ParsedListQuery } from "@/types/list";

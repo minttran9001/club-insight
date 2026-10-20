@@ -1,4 +1,4 @@
-import { formatDay } from "@/domain/metrics";
+import { formatDay } from "@/domain/formatDay";
 import type { DateRange } from "@/types/range";
 
 export function dateKey(date: Date): string {

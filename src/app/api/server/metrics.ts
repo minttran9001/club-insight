@@ -1,4 +1,4 @@
-import { formatDay } from "@/domain/metrics";
+import { formatDay } from "@/domain/formatDay";
 import type { ClubPresets } from "@/types/club";
 
 /** Monday 5 October 2026, 09:00 in Asia/Ho_Chi_Minh. */

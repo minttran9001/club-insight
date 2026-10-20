@@ -1,6 +1,6 @@
 import Database from "better-sqlite3";
 import path from "node:path";
-import { formatDay } from "@/domain/metrics";
+import { formatDay } from "@/domain/formatDay";
 import { foldSearchText } from "@/app/api/server/foldSearchText";
 import { formatLocalStart, localDateKey } from "@/app/api/server/metrics";
 import { viSortKey } from "@/app/api/server/db/sortKey";
