@@ -8,6 +8,7 @@ import { earliestSessionDayByClub, loadClubBundleSync } from "@/app/api/server/d
 import { queryDashboard } from "@/app/api/server/db/dashboard";
 import { queryActivePlayers, queryNoShows, querySessions, queryUnrecordedSessions } from "@/app/api/server/db/lists";
 import { viSortKey } from "@/app/api/server/db/sortKey";
+import type { SessionListItem } from "@/types/session";
 
 const wide: ParsedListQuery = { q: "", sort: null, dir: "asc", page: 1, pageSize: 500 };
 
@@ -114,7 +115,7 @@ function bundle(clubId: string) {
   return loaded;
 }
 
-function matchesQuery(row: { title: string; localStart: string; durationMinutes: number; places: number; keptBookings: number; cancelledBookings: number; attended: number | null; noShows: number | null; attendanceRecorded: boolean }, q: string): boolean {
+function matchesQuery(row: SessionListItem, q: string): boolean {
   const needle = foldSearchText(q.trim());
   return sessionListColumns.some((column) => foldSearchText(column.text(row)).includes(needle));
 }

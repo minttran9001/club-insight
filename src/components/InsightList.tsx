@@ -7,8 +7,12 @@ import { Table, type TableColumn } from "@/components/Table/Table";
 import { useOpenList } from "@/hooks/useOpenList";
 import { useUnrecordedSessions } from "@/hooks/useUnrecordedSessions";
 import type { OpenMetric } from "@/types/dashboard";
+import type { SortDir } from "@/types/list";
 
 export function InsightList({
+  club,
+  from,
+  to,
   open,
   search,
   sort,
@@ -23,10 +27,13 @@ export function InsightList({
   onSort,
   onPage,
 }: {
+  club: string;
+  from: string;
+  to: string;
   open: OpenMetric;
   search: string;
   sort: string | null;
-  direction: string | null;
+  direction: SortDir | null;
   page: number;
   settledClub: string | null;
   settledFrom: string | null;
@@ -38,6 +45,9 @@ export function InsightList({
   onPage: (page: number) => void;
 }) {
   const { visibleList, listIsRefreshing, listErrorMessage } = useOpenList({
+    club,
+    from,
+    to,
     open,
     search,
     sort,

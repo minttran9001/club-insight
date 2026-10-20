@@ -1,8 +1,13 @@
 import { OpenList, type OpenMetric } from "@/types/dashboard";
+import type { SortDir } from "@/types/list";
 
 export function openMetric(value: string | null): OpenMetric | null {
   if (value === OpenList.sessions || value === OpenList.players || value === OpenList.noShows) return value;
   return null;
+}
+
+export function sortDir(value: string | null): SortDir | null {
+  return value === "asc" || value === "desc" ? value : null;
 }
 
 export function writeClubQuery(
@@ -14,7 +19,7 @@ export function writeClubQuery(
     open: OpenMetric | null;
     q?: string;
     sort?: string | null;
-    dir?: string | null;
+    dir?: SortDir | null;
     page?: number;
   },
 ) {

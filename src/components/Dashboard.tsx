@@ -31,6 +31,9 @@ export function Dashboard() {
       <DashboardSummary club={club} from={from} to={to} settledClub={settledClub} settledFrom={settledFrom} settledTo={settledTo} />
       {club && from && to ? (
         <InsightList
+          club={club}
+          from={from}
+          to={to}
           open={listOpen}
           search={q}
           sort={sort}

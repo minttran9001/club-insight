@@ -1,4 +1,5 @@
 import { APIError } from "@/apiClient/apiError";
+import type { SortDir } from "@/types/list";
 import type { DateRange } from "@/types/range";
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
@@ -37,7 +38,7 @@ export function readItems<T>(
 export function readPageFields(
   record: Record<string, unknown>,
   message: string,
-): { page: number; pageSize: number; total: number; q: string; sort: string | null; dir: "asc" | "desc" | null } {
+): PagedClubFields {
   if (!isWholeNumber(record.page) || !isWholeNumber(record.pageSize) || !isWholeNumber(record.total)) {
     throw invalidResponse(message);
   }
@@ -55,7 +56,7 @@ function isWholeNumber(value: unknown): value is number {
 
 export function listSearchParams(
   range: DateRange,
-  query: { q: string; sort: string | null; dir: string | null; page: number; pageSize: number },
+  query: { q: string; sort: string | null; dir: SortDir | null; page: number; pageSize: number },
 ): Record<string, string> {
   const params: Record<string, string> = {
     from: range.from,
@@ -75,7 +76,7 @@ export type PagedClubFields = {
   total: number;
   q: string;
   sort: string | null;
-  dir: "asc" | "desc" | null;
+  dir: SortDir | null;
 };
 
 export function readPagedClubResponse(body: unknown, message: string): { clubId: string; from: string; to: string; record: Record<string, unknown> } & PagedClubFields {

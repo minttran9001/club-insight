@@ -2,6 +2,7 @@ import type { NoShowKind, NoShowListReport } from "@/types/noShow";
 import type { ActivePlayerItem } from "@/types/player";
 import type { DateRange } from "@/types/range";
 import type { SessionListItem } from "@/types/session";
+import type { SortDir } from "@/types/list";
 
 export const OpenList = {
   sessions: "sessions",
@@ -45,7 +46,7 @@ export type QueryError = {
   open?: OpenMetric;
   q?: string;
   sort?: string | null;
-  dir?: string | null;
+  dir?: SortDir | null;
   page?: number;
   message: string;
 };
@@ -53,7 +54,7 @@ export type QueryError = {
 export type ListRequest = {
   q: string;
   sort: string | null;
-  dir: string | null;
+  dir: SortDir | null;
   page: number;
   pageSize: number;
 };
@@ -67,7 +68,7 @@ type Listed = {
   total: number;
   q: string;
   sort: string | null;
-  dir: string | null;
+  dir: SortDir | null;
 };
 
 export type ListState =
@@ -82,6 +83,6 @@ export type DashboardQuery = {
   open?: OpenMetric | null;
   q?: string;
   sort?: string | null;
-  dir?: string | null;
+  dir?: SortDir | null;
   page?: number;
 };

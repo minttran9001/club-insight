@@ -4,6 +4,7 @@ import { useRef, type ReactNode } from "react";
 import { useVirtualRows } from "@/components/Table/useVirtualRows";
 import { rowHeightPx, virtualizeAfter } from "@/components/Table/virtualRange";
 import { controlClass } from "@/constants/controlClass";
+import type { SortDir } from "@/types/list";
 import { Button } from "../Button";
 
 const pagerButton = `${controlClass} disabled:cursor-not-allowed disabled:opacity-50`;
@@ -27,7 +28,7 @@ type TableProps<T> = {
   query?: string;
   onQueryChange?: (value: string) => void;
   sort?: string | null;
-  dir?: string | null;
+  dir?: SortDir | null;
   onSort?: (columnId: string) => void;
   page?: number;
   pageSize?: number;
@@ -146,7 +147,7 @@ function ScrollingRows<T>({
   getRowId: (row: T) => string | number;
   minWidth: string;
   sort?: string | null;
-  dir?: string | null;
+  dir?: SortDir | null;
   onSort?: (columnId: string) => void;
   noMatches?: boolean;
   busy?: boolean;
@@ -211,7 +212,7 @@ function DataTable<T>({
   getRowId: (row: T) => string | number;
   minWidth: string;
   sort?: string | null;
-  dir?: string | null;
+  dir?: SortDir | null;
   onSort?: (columnId: string) => void;
   noMatches?: boolean;
 }) {

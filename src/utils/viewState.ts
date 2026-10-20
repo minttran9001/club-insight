@@ -1,4 +1,5 @@
 import type { ListState, OpenMetric, QueryError } from "@/types/dashboard";
+import type { SortDir } from "@/types/list";
 
 export function sameList(
   list: ListState,
@@ -9,7 +10,7 @@ export function sameList(
     open: OpenMetric;
     q: string;
     sort: string | null;
-    dir: string | null;
+    dir: SortDir | null;
     page: number;
     pageSize: number;
   },

@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import type { ClubSummary } from "@/types/club";
 import { OpenList, type DashboardQuery } from "@/types/dashboard";
-import { openMetric, writeClubQuery } from "@/utils/clubQuery";
+import { openMetric, sortDir, writeClubQuery } from "@/utils/clubQuery";
 
 export function useClubQuery(clubs: ClubSummary[] | null) {
   const router = useRouter();
@@ -15,7 +15,7 @@ export function useClubQuery(clubs: ClubSummary[] | null) {
   const open = openMetric(searchParams.get("open"));
   const q = searchParams.get("q") ?? "";
   const sort = searchParams.get("sort") || null;
-  const dir = searchParams.get("dir") || null;
+  const dir = sortDir(searchParams.get("dir"));
   const pageParam = searchParams.get("page");
   const page = pageParam && /^[1-9]\d*$/.test(pageParam) ? Number(pageParam) : 1;
 
