@@ -27,20 +27,23 @@ export function DashboardHeader({
   if (loading) return <HeaderSkeleton />;
 
   return (
-    <header className="flex w-full flex-col lg:flex-row items-center gap-5 justify-between lg:justify-start">
+    <header>
+      <h1 className="text-2xl font-bold mb-5">Club insights</h1>
+       <div className="flex flex-col gap-8 lg:flex-row lg:justify-end lg:items-end w-full">
        <Select
           id="club"
           options={(clubs ?? []).map((club) => ({ value: club.id, label: club.name }))}
           value={clubId ?? ""}
           onChange={onClub}
           disabled={!clubs}
-          label="Insights for club"
+          label="Club"
           className="w-full lg:max-w-xs"
         />
       <div className="w-full flex flex-col gap-8 lg:flex-row lg:justify-end lg:items-end">
         <DateFields from={from} to={to} onRange={onRange} />
         <RangePresets selected={selected} from={from} to={to} onSelect={onRange} />
       </div>
+       </div>
     </header>
   );
 }
