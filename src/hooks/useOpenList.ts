@@ -52,10 +52,12 @@ export function useOpenList(query: {
 
   const shown: ListKey = { ...current, open, q, sort, dir, page, pageSize: DEFAULT_PAGE_SIZE };
   const visibleList = loadedList && sameListScope(loadedList, shown) ? loadedList : null;
+  const listErrorMessage = listError && sameList(listError, shown) ? listError.message : null;
 
   return {
     visibleList,
+    listLoading: visibleList === null && listErrorMessage === null,
     listIsRefreshing: visibleList !== null && !sameList(visibleList, shown),
-    listErrorMessage: listError && sameList(listError, shown) ? listError.message : null,
+    listErrorMessage,
   };
 }

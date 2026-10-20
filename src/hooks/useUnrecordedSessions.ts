@@ -35,8 +35,12 @@ export function useUnrecordedSessions(range: { open: OpenList; current: ClubDate
   }, [open, settledClubId, settledFrom, settledTo]);
 
   const showing = open === OpenList.noShows;
+  const loadedForCurrent = showing && loaded !== null && sameRange(loaded, current);
+  const unrecordedSessionsErrorMessage = showing && loadError && sameRange(loadError, current) ? loadError.message : null;
+
   return {
-    unrecordedSessions: showing && loaded && sameRange(loaded, current) ? loaded.sessions : [],
-    unrecordedSessionsErrorMessage: showing && loadError && sameRange(loadError, current) ? loadError.message : null,
+    unrecordedSessions: loadedForCurrent ? loaded.sessions : [],
+    unrecordedSessionsLoading: showing && !loadedForCurrent && unrecordedSessionsErrorMessage === null,
+    unrecordedSessionsErrorMessage,
   };
 }

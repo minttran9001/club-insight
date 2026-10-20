@@ -37,7 +37,7 @@ export function InsightList({
   onSort: (columnId: string) => void;
   onPage: (page: number) => void;
 }) {
-  const { visibleList, listIsRefreshing, listErrorMessage } = useOpenList({ current, settled, rangeHasSettled, open, q, sort, dir, page });
+  const { visibleList, listLoading, listIsRefreshing, listErrorMessage } = useOpenList({ current, settled, rangeHasSettled, open, q, sort, dir, page });
   const { unrecordedSessions, unrecordedSessionsErrorMessage } = useUnrecordedSessions({ open, current, settled });
   const view = visibleList ? insightListView(visibleList) : null;
   const showEmpty = view !== null && visibleList !== null && visibleList.total === 0 && visibleList.q === "";
@@ -46,7 +46,7 @@ export function InsightList({
     <div id="insight-list" className="flex flex-col gap-4 border-t border-teal-100 pt-6">
       <ListTypeToggle value={open} onChange={onOpen} />
       {listErrorMessage ? <p role="alert">{listErrorMessage}</p> : null}
-      {!listErrorMessage && !view ? <ListSkeleton /> : null}
+      {listLoading ? <ListSkeleton /> : null}
       {view && visibleList ? (
         <section aria-labelledby={view.headingId} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
