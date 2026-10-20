@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { allSessionsRange } from "@/app/api/server/metrics";
+import { allSessionsRange } from "@/app/api/server/testSupport";
 
 const now = new Date("2026-10-05T02:00:00.000Z");
 const timeZone = "Asia/Ho_Chi_Minh";

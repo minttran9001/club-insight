@@ -1,11 +1,9 @@
 import { formatDay } from "@/domain/formatDay";
-import type { ClubPresets } from "@/types/club";
 
 /** Monday 5 October 2026, 09:00 in Asia/Ho_Chi_Minh. */
 export const FIXED_NOW = new Date("2026-10-05T02:00:00.000Z");
 import type { WeekPoint } from "@/types/dashboard";
 import type { DateRange } from "@/types/range";
-import type { MetricSession } from "@/types/session";
 
 const WEEKDAYS_FROM_SUNDAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -74,17 +72,6 @@ export function allSessionsRangeFromFirstDay(now: Date, timeZone: string, firstD
   return { from, to: fallback.to };
 }
 
-export function allSessionsRange(now: Date, timeZone: string, sessions: MetricSession[]): DateRange {
-  let firstDay: string | null = null;
-  for (const session of sessions) {
-    const start = new Date(session.startsAt);
-    if (Number.isNaN(start.getTime())) continue;
-    const day = localDateKey(start, timeZone);
-    if (firstDay === null || day < firstDay) firstDay = day;
-  }
-  return allSessionsRangeFromFirstDay(now, timeZone, firstDay);
-}
-
 export function weekSpan(from: string, to: string): { first: string; last: string } {
   return { first: mondayOnOrBefore(from), last: mondayOnOrBefore(to) };
 }
@@ -102,14 +89,6 @@ export function buildWeekPoints(from: string, to: string, counts: ReadonlyMap<st
     weeks.push({ weekStart, label, count, partial, text });
   }
   return weeks;
-}
-
-export function presetRanges(now: Date, timeZone: string, sessions: MetricSession[]): ClubPresets {
-  return {
-    fourWeeks: completeWeeksEnding(now, timeZone, 4),
-    twelveWeeks: completeWeeksEnding(now, timeZone, 12),
-    all: allSessionsRange(now, timeZone, sessions),
-  };
 }
 
 function part(parts: Intl.DateTimeFormatPart[], type: Intl.DateTimeFormatPartTypes): string {
