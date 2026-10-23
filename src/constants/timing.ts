@@ -1,2 +1,2 @@
-export const rangeFetchDebounceMs = 300;
-export const chartResizeDebounceMs = 200;
+export const RANGE_FETCH_DEBOUNCE_MS = 300;
+export const CHART_RESIZE_DEBOUNCE_MS = 200;

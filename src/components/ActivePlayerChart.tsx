@@ -13,7 +13,7 @@ import { WeekDot } from "@/components/WeekDot";
 import { WeekTick } from "@/components/WeekTick";
 import { WeekTooltip } from "@/components/WeekTooltip";
 import { chartGrid, chartInk, chartTick } from "@/constants/chartColors";
-import { chartResizeDebounceMs } from "@/constants/timing";
+import { CHART_RESIZE_DEBOUNCE_MS } from "@/constants/timing";
 import type { WeekPoint } from "@/types/dashboard";
 
 export function ActivePlayerChart({ weeks }: { weeks: WeekPoint[] }) {
@@ -23,7 +23,7 @@ export function ActivePlayerChart({ weeks }: { weeks: WeekPoint[] }) {
     <figure className="flex min-w-0 flex-col gap-3 rounded-xl border border-sky-100 bg-sky-50 p-4">
       <figcaption className="text-sm font-medium text-sky-800">Active players by week</figcaption>
       <div className="h-64 min-w-0">
-        <ResponsiveContainer width="100%" height="100%" debounce={chartResizeDebounceMs}>
+        <ResponsiveContainer width="100%" height="100%" debounce={CHART_RESIZE_DEBOUNCE_MS}>
           <LineChart data={weeks} margin={{ top: 8, right: 8, bottom: 8, left: 0 }}>
             <CartesianGrid stroke={chartGrid} vertical={false} />
             <XAxis

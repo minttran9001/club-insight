@@ -21,5 +21,7 @@ export function useClubs() {
     return () => controller.abort();
   }, []);
 
-  return { clubs, error };
+  const isLoading = clubs === null && !error;
+
+  return { clubs, error, isLoading };
 }

@@ -9,7 +9,7 @@ import { useSettledRange } from "@/hooks/useSettledRange";
 import { OpenList } from "@/types/dashboard";
 
 export function Dashboard() {
-  const { clubs, error: clubsError } = useClubs();
+  const { clubs, error: clubsError, isLoading: isLoadingClubs } = useClubs();
   const { club, from, to, open, q, sort, dir, page, writeQuery } = useClubQuery(clubs);
   const listOpen = open ?? OpenList.sessions;
   const current = club && from && to ? { clubId: club, from, to } : null;
@@ -19,7 +19,7 @@ export function Dashboard() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 px-4 py-8 text-zinc-900 sm:px-6">
       <DashboardHeader
-        loading={clubs === null && !clubsError}
+        loading={isLoadingClubs}
         clubs={clubs}
         clubId={club}
         selected={selected}

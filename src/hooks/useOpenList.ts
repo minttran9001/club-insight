@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { errorMessage } from "@/apiClient/apiError";
 import { isAborted } from "@/apiClient/client";
 import { loadList } from "@/apiClient/loadList";
-import { rangeFetchDebounceMs } from "@/constants/timing";
+import { RANGE_FETCH_DEBOUNCE_MS } from "@/constants/timing";
 import { DEFAULT_PAGE_SIZE } from "@/domain/pageList";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import type { ListState, OpenList } from "@/types/dashboard";
@@ -27,7 +27,7 @@ export function useOpenList(query: {
   const settledClubId = settled?.clubId;
   const settledFrom = settled?.from;
   const settledTo = settled?.to;
-  const settledQ = useDebouncedValue(q, rangeFetchDebounceMs);
+  const settledQ = useDebouncedValue(q, RANGE_FETCH_DEBOUNCE_MS);
   const ready = rangeHasSettled && settledQ === q;
   const [loadedList, setLoadedList] = useState<ListState | null>(null);
   const [listError, setListError] = useState<(ListKey & { message: string }) | null>(null);
