@@ -1,6 +1,6 @@
 import type { DashboardReport } from "@/types/dashboard";
 import { MetricCard } from "@/components/MetricCard";
-import { activePlayersDefinition, attendanceCoverage, noShowsDefinition, sessionsHeldDefinition } from "@/components/metricCopy";
+import { ACTIVE_PLAYERS_DEFINITION_TEXT, attendanceCoverage, NO_SHOWS_DEFINITION_TEXT, SESSIONS_HELD_DEFINITION_TEXT } from "@/components/metricCopy";
 import { noShowCountLabel } from "@/utils/noShowListEmptyCopy";
 
 export function MetricCards({ dashboard }: { dashboard: DashboardReport }) {
@@ -13,7 +13,7 @@ export function MetricCards({ dashboard }: { dashboard: DashboardReport }) {
         value={String(dashboard.sessionsHeld.value)}
         count={dashboard.sessionsHeld.value}
         delta={dashboard.sessionsHeld.delta}
-        definition={sessionsHeldDefinition}
+        definition={SESSIONS_HELD_DEFINITION_TEXT}
         comparison={dashboard.comparison.label}
         tone="teal"
       />
@@ -22,7 +22,7 @@ export function MetricCards({ dashboard }: { dashboard: DashboardReport }) {
         value={String(dashboard.activePlayers.value)}
         count={dashboard.activePlayers.value}
         delta={dashboard.activePlayers.delta}
-        definition={activePlayersDefinition}
+        definition={ACTIVE_PLAYERS_DEFINITION_TEXT}
         comparison={dashboard.comparison.label}
         tone="sky"
       />
@@ -31,7 +31,7 @@ export function MetricCards({ dashboard }: { dashboard: DashboardReport }) {
         value={noShowValue}
         count={dashboard.noShows.value}
         delta={dashboard.noShows.delta}
-        definition={noShowsDefinition}
+        definition={NO_SHOWS_DEFINITION_TEXT}
         coverage={dashboard.noShows.heldSessions > 0 ? attendanceCoverage(dashboard.noShows.attendanceTaken, dashboard.noShows.heldSessions) : null}
         comparison={dashboard.comparison.label}
         tone="amber"

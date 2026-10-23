@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { clubHasNotHeldSession } from "@/app/api/server/metrics";
-import { noSessionsInRange } from "@/components/metricCopy";
+import { NO_SESSIONS_IN_RANGE_TEXT } from "@/components/metricCopy";
 import type { ParsedListQuery } from "@/types/list";
 import type { ClubRecord } from "@/types/club";
 import { openDatabase, withDatabase } from "@/app/api/server/db/connection";
@@ -143,7 +143,7 @@ test("a range with no held sessions says so when the club has held one before", 
 
   assert.equal(report.dashboard.hasHeldSession, true);
   assert.equal(report.dashboard.sessionsHeld.value, 0);
-  assert.equal(report.dashboard.message, noSessionsInRange);
+  assert.equal(report.dashboard.message, NO_SESSIONS_IN_RANGE_TEXT);
   assert.equal(report.dashboard.noShows.kind, "no-sessions");
 });
 
